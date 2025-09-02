@@ -44,6 +44,8 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const showDark = isScrolled || isHovered;
+
   const handleUserClick = () => {
     router.push('/login')
   }
@@ -64,7 +66,6 @@ const Header = () => {
     }
   }
   const categories = {
-    'BWME 2024': [],
     'PRODUCTS': {
       'LUXURY': [
         'JOHN ASHWOOD LUXURY',
@@ -99,9 +100,7 @@ const Header = () => {
         'BAKHOOR / INCENSE PASTILLES'
       ]
     },
-    'BRANDS': [],
     'COLLECTIONS': [],
-    'SMART SHOPPING': [],
     'SOCIAL HUB': [],
     'ABOUT US': [],
     'CONTACT US': []
@@ -109,7 +108,7 @@ const Header = () => {
 
   return (
     <header 
-      className={`${isScrolled ? 'sticky top-0' : 'absolute mt-10'} top-0 left-0 right-0 z-50 ${
+      className={`${isScrolled ? 'sticky top-0' : 'absolute'} top-0 left-0 right-0 z-50 ${
         isScrolled || isHovered || isSearchOpen
           ? 'bg-white border-b border-gray-200 shadow-sm' 
           : 'bg-transparent'
@@ -125,13 +124,34 @@ const Header = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
+          <motion.div 
+            className='relative cursor-pointer'
             onClick={() => router.push('/')}
-            className='cursor-pointer'
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <Image src="/assets/images/logo.jpg" alt="House of Perfumes Logo" width={50} height={50} className='w-28 h-28 overflow-hidden'/>  
+            <div className='relative h-12 w-fit max-w-24 my-3.5'>
+            <Image
+            src="/assets/images/logo.png"
+            alt="House of Perfumes Logo"
+            width={80}
+            height={80}
+            className={`object-contain transition-opacity duration-300 w-full h-full ${
+              showDark ? "hidden" : "block"
+            }`}
+          />
+          {/* Dark Logo */}
+          <Image
+            src="/assets/images/logo_dark.png"
+            alt="House of Perfumes Dark Logo"
+            width={80}
+            height={80}
+            className={`object-contain transition-opacity duration-300 w-full h-full ${
+              showDark ? "block" : "hidden"
+            }`}
+          />
+            </div>
           </motion.div>
           
           {/* Right Icons */}
@@ -197,7 +217,7 @@ const Header = () => {
                   isScrolled || isHovered 
                     ? 'text-black hover:text-gray-600' 
                     : 'text-white hover:text-gray-300'
-                } text-base font-light tracking-wider py-2 px-1 relative block transition-colors duration-300 cursor-pointer`}
+                } text-sm font-light tracking-wider py-2 px-1 relative block transition-colors duration-300 cursor-pointer`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}

@@ -13,11 +13,11 @@ const HeroSection = () => {
           muted
           loop
           playsInline
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         >
-          <source src="/assets/videos/hero-video.mp4" type="video/mp4" />
+          <source src="/assets/videos/hero.mp4" type="video/mp4" />
           {/* Fallback for browsers that don't support video */}
-          <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black" />
+          <div className="w-full h-full " />
         </video>
         
         {/* Video Overlay */}

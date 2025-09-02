@@ -8,7 +8,6 @@
 
 body {
   background-color: #000;
-  color: #fff;
   font-family: 'Inter', sans-serif;
 }
 @keyframes fadeSlide {
@@ -31,4 +30,17 @@ body {
 }
 .animate-fadeSlide {
   animation: fadeSlide 4s ease-in-out forwards;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 25s linear infinite;
 }

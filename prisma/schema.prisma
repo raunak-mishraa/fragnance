@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String     @id @default(cuid())
+  email      String     @unique
+  name       String?
+  phone      String?    @unique
+  isVerified Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  addresses  Address[]
+  carts      Cart[]
+  otps       OTP[]      @relation("UserOTPs")
+  orders     Order[]
+  reviews    Review[]
+  wishlists  Wishlist[]
+}
+
+model Admin {
+  id         String     @id @default(cuid())
+  email      String     @unique
+  name       String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  isVerified Boolean    @default(false)
+  otps       AdminOTP[]
+}
+
+model AdminOTP {
+  id        String   @id @default(cuid())
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  email     String
+  createdAt DateTime @default(now())
+  adminId   String?
+  admin     Admin?   @relation(fields: [adminId], references: [id])
+
+  @@index([adminId], map: "AdminOTP_adminId_fkey")
+}
+
+model OTP {
+  id        String   @id @default(cuid())
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  userId    String?
+  email     String
+  createdAt DateTime @default(now())
+  user      User?    @relation("UserOTPs", fields: [userId], references: [id])
+
+  @@index([userId], map: "OTP_userId_fkey")
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  fullName  String
+  phone     String
+  street    String
+  city      String
+  state     String
+  zip       String
+  country   String
+  isDefault Boolean @default(false)
+  user      User    @relation(fields: [userId], references: [id])
+  orders    Order[]
+
+  @@index([userId], map: "Address_userId_fkey")
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  perfumes Perfume[]
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  perfumes Perfume[]
+}
+
+model Perfume {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal          @db.Decimal(10, 2)
+  stock       Int              @default(0)
+  imageUrl    String?
+  gender      Gender
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  brandId     String?
+  categoryId  String?
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  brand       Brand?           @relation(fields: [brandId], references: [id])
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  variants    PerfumeVariant[]
+  reviews     Review[]
+  wishlist    Wishlist[]
+
+  @@index([brandId], map: "Perfume_brandId_fkey")
+  @@index([categoryId], map: "Perfume_categoryId_fkey")
+}
+
+model PerfumeVariant {
+  id        String  @id @default(cuid())
+  volumeMl  Int
+  price     Decimal @db.Decimal(10, 2)
+  stock     Int     @default(0)
+  perfumeId String
+  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+
+  @@index([perfumeId], map: "PerfumeVariant_perfumeId_fkey")
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+
+  @@index([userId], map: "Cart_userId_fkey")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  perfumeId String
+  quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+
+  @@index([cartId], map: "CartItem_cartId_fkey")
+  @@index([perfumeId], map: "CartItem_perfumeId_fkey")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  shippingId  String?
+  shipping    Address?    @relation(fields: [shippingId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+  payment     Payment?
+
+  @@index([shippingId], map: "Order_shippingId_fkey")
+  @@index([userId], map: "Order_userId_fkey")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  perfumeId String
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  order     Order   @relation(fields: [orderId], references: [id])
+  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+
+  @@index([orderId], map: "OrderItem_orderId_fkey")
+  @@index([perfumeId], map: "OrderItem_perfumeId_fkey")
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  orderId   String        @unique
+  provider  String
+  amount    Decimal       @db.Decimal(10, 2)
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  order     Order         @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  perfumeId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([perfumeId], map: "Review_perfumeId_fkey")
+  @@index([userId], map: "Review_userId_fkey")
+}
+
+model Wishlist {
+  id        String  @id @default(cuid())
+  userId    String
+  perfumeId String
+  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@index([perfumeId], map: "Wishlist_perfumeId_fkey")
+  @@index([userId], map: "Wishlist_userId_fkey")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNISEX
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
