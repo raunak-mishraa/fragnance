@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "House of Perfumes",
+  title: "ScentSkape - Perfume & Fragrance Store",
   description: "Discover exquisite perfumes and fragrances.",
 };
 

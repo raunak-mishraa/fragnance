@@ -1,78 +1,124 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
-import { type Product } from "@/lib/schema";
+import prisma from "@/lib/prisma"; // your Prisma client
+import crypto from "crypto";
+import { PerfumeType, Category } from "@prisma/client";
 
-const DATA_FILE = path.join(process.cwd(), "data/products.json");
 const UPLOAD_DIR = path.join(process.cwd(), "public/uploads");
 
-async function getProducts(): Promise<Product[]> {
+// ✅ PUT /api/products/[id]
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+
   try {
-    const data = await fs.readFile(DATA_FILE, "utf8");
-    return JSON.parse(data);
-  } catch {
-    return [];
+    const perfume = await prisma.perfume.findUnique({
+      where: { id },
+      include: { images: true, fragrance: true },
+    });
+
+    if (!perfume) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    const formData = await request.formData();
+    const dataStr = formData.get("data") as string;
+    if (!dataStr) {
+      return NextResponse.json(
+        { error: "Missing product data" },
+        { status: 400 }
+      );
+    }
+
+    const data = JSON.parse(dataStr);
+
+    // ✅ handle new images
+    const images: string[] = perfume.images.map((img) => img.url);
+    let i = 0;
+    while (true) {
+      const file = formData.get(`image${i}`) as File | null;
+      if (!file) break;
+
+      const filename = `${crypto.randomUUID()}-${file.name}`;
+      await fs.mkdir(UPLOAD_DIR, { recursive: true });
+      const uploadPath = path.join(UPLOAD_DIR, filename);
+      const buffer = Buffer.from(await file.arrayBuffer());
+      await fs.writeFile(uploadPath, buffer);
+      images.push(`/uploads/${filename}`);
+      i++;
+    }
+
+    const updatedPerfume = await prisma.perfume.update({
+      where: { id },
+      data: {
+        flavor: data.flavor,
+        mrp: parseFloat(data.mrp),
+        size: data.size,
+        type: data.type as PerfumeType,
+        category: data.category as Category,
+        description: data.description,
+        brand: data.brandId ? { connect: { id: data.brandId } } : undefined,
+        fragrance: {
+          upsert: {
+            update: {
+              topNotes: data.fragranceNotes?.topNotes || null,
+              middleNotes: data.fragranceNotes?.middleNotes || null,
+              baseNotes: data.fragranceNotes?.baseNotes || null,
+            },
+            create: {
+              topNotes: data.fragranceNotes?.topNotes || null,
+              middleNotes: data.fragranceNotes?.middleNotes || null,
+              baseNotes: data.fragranceNotes?.baseNotes || null,
+            },
+          },
+        },
+        images: {
+          deleteMany: {}, // remove old ones
+          create: images.map((url) => ({
+            url,
+            altText: data.flavor || "Perfume image",
+          })),
+        },
+      },
+      include: {
+        brand: true,
+        images: true,
+        fragrance: true,
+      },
+    });
+
+    return NextResponse.json(updatedPerfume, { status: 200 });
+  } catch (error) {
+    console.error("PUT /api/products/[id] error:", error);
+    return NextResponse.json(
+      { error: "Failed to update product" },
+      { status: 500 }
+    );
   }
 }
 
-async function saveProducts(products: Product[]) {
-  await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
-  await fs.writeFile(DATA_FILE, JSON.stringify(products, null, 2));
-}
+// ✅ DELETE /api/products/[id]
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = await params;
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
-  const products = await getProducts();
-  const index = products.findIndex((p) => p.id === id);
+  try {
+    const deleted = await prisma.perfume.delete({
+      where: { id },
+      include: { brand: true, images: true, fragrance: true },
+    });
 
-  if (index === -1) {
-    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    return NextResponse.json(deleted, { status: 200 });
+  } catch (error) {
+    console.error("DELETE /api/products/[id] error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete product" },
+      { status: 500 }
+    );
   }
-
-  const formData = await request.formData();
-  const dataStr = formData.get("data") as string;
-  const data = JSON.parse(dataStr);
-
-  // handle images
-  const images: string[] = products[index].images ?? [];
-  let i = 0;
-  while (true) {
-    const file = formData.get(`image${i}`) as File | null;
-    if (!file) break;
-
-    const filename = `${crypto.randomUUID()}-${file.name}`;
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-    const uploadPath = path.join(UPLOAD_DIR, filename);
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(uploadPath, buffer);
-    images.push(`/uploads/${filename}`);
-    i++;
-  }
-
-  const updatedProduct: Product = {
-    ...products[index],
-    ...data,
-    mrp: parseFloat(data.mrp),
-    images,
-  };
-
-  products[index] = updatedProduct;
-  await saveProducts(products);
-
-  return NextResponse.json(updatedProduct);
-}
-
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
-  const products = await getProducts();
-  const index = products.findIndex((p) => p.id === id);
-
-  if (index === -1) {
-    return NextResponse.json({ error: "Product not found" }, { status: 404 });
-  }
-
-  const [deleted] = products.splice(index, 1);
-  await saveProducts(products);
-
-  return NextResponse.json(deleted, { status: 200 });
 }

@@ -13,7 +13,14 @@ export const insertProductSchema = z.object({
     middleNotes: z.string().optional(),
     baseNotes: z.string().optional(),
   }),
-  images: z.array(z.string()).optional(),
+  images: z
+    .array(
+      z.object({
+        url: z.string().min(1, "Image URL is required"),
+        altText: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 export type InsertProduct = z.infer<typeof insertProductSchema>;
@@ -22,4 +29,21 @@ export interface Product extends InsertProduct {
   id: string;
   createdAt: string;
   updatedAt: string;
+  brand: {
+    id: string;
+    name: string;
+  };
+  images: {
+    id: string;
+    url: string;
+    altText: string;
+    perfumeId: string;
+  }[];
+  fragrance: {
+    id: string;
+    topNotes: string;
+    middleNotes: string;
+    baseNotes: string;
+    perfumeId: string;
+  };
 }

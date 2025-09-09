@@ -146,7 +146,7 @@ model PerfumeImage {
   altText   String?
 
   perfumeId String
-  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
 
   @@index([perfumeId], map: "PerfumeImage_perfumeId_fkey")
 }

@@ -27,16 +27,16 @@ interface Product {
   color: string;
 }
 
-// Default products in case API not used
+// Default products in INR
 const defaultProducts: Product[] = [
-  { id: 1, name: "NERO", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-gray-900" },
-  { id: 2, name: "OUD", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-red-800" },
-  { id: 3, name: "VERDE", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-green-800" },
-  { id: 4, name: "BLU", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-blue-800" },
-  { id: 5, name: "AZZURRO", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-cyan-400" },
-  { id: 6, name: "ROSA", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-pink-500" },
-  { id: 7, name: "LIME", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-lime-500" },
-  { id: 8, name: "ROSSO", price: "79", image: "/api/placeholder/200/300", soldOut: true, color: "bg-red-600" },
+  { id: 1, name: "NERO", price: "4999", image: "/api/placeholder/200/300", soldOut: true, color: "bg-gray-900" },
+  { id: 2, name: "OUD", price: "5999", image: "/api/placeholder/200/300", soldOut: true, color: "bg-red-800" },
+  { id: 3, name: "VERDE", price: "4499", image: "/api/placeholder/200/300", soldOut: true, color: "bg-green-800" },
+  { id: 4, name: "BLU", price: "5299", image: "/api/placeholder/200/300", soldOut: true, color: "bg-blue-800" },
+  { id: 5, name: "AZZURRO", price: "4799", image: "/api/placeholder/200/300", soldOut: true, color: "bg-cyan-400" },
+  { id: 6, name: "ROSA", price: "5499", image: "/api/placeholder/200/300", soldOut: true, color: "bg-pink-500" },
+  { id: 7, name: "LIME", price: "4599", image: "/api/placeholder/200/300", soldOut: true, color: "bg-lime-500" },
+  { id: 8, name: "ROSSO", price: "5799", image: "/api/placeholder/200/300", soldOut: true, color: "bg-red-600" },
 ];
 
 const FilterSection = ({
@@ -84,7 +84,7 @@ const ProductCard = ({ product }: { product: Product }) => (
       </div>
       <div className="p-4 text-center">
         <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
-        <p className="text-gray-600">DHS. {product.price}</p>
+        <p className="text-gray-600">₹{product.price}</p>
       </div>
     </CardContent>
   </Card>
@@ -97,7 +97,7 @@ export default function ProductListingPage() {
   const [products, setProducts] = useState<Product[]>(defaultProducts);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 79]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([1000, 10000]);
   const [openSections, setOpenSections] = useState({
     availability: true,
     price: true,
@@ -107,7 +107,7 @@ export default function ProductListingPage() {
     category: true,
   });
 
-  // Optional: Fetch products dynamically
+  // Fetch products dynamically based on brandName
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -115,9 +115,13 @@ export default function ProductListingPage() {
         if (res.ok) {
           const data = await res.json();
           setProducts(data);
+        } else {
+          // Fallback to default products if API fails or no products found
+          setProducts(defaultProducts);
         }
       } catch (err) {
         console.error("Failed to fetch products:", err);
+        setProducts(defaultProducts);
       }
     }
     fetchProducts();
@@ -149,7 +153,7 @@ export default function ProductListingPage() {
         <div className="absolute inset-0 bg-black/50" />
         <motion.a
           href={`/collections/${brandName}`}
-          className="absolute inset-0 flex items-center justify-center text-white text-3xl md:text-5xl font-light tracking-wider hover:underline"
+          className="absolute inset-0 flex items-center justify-center text-white text-3xl md:text-5xl font-light tracking-wider capitalize"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -192,16 +196,33 @@ export default function ProductListingPage() {
 
             <FilterSection title="PRICE" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
               <div className="space-y-4">
-                <Slider value={priceRange} onValueChange={(value) => setPriceRange([value[0], value[1]])} max={79} step={1} className="w-full" />
+                <Slider
+                  value={priceRange}
+                  onValueChange={(value) => setPriceRange([value[0], value[1]])}
+                  max={10000}
+                  min={1000}
+                  step={100}
+                  className="w-full"
+                />
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">د.إ</span>
-                    <input type="number" value={priceRange[0]} onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])} className="w-16 px-2 py-1 border border-gray-300 rounded text-sm" />
+                    <span className="text-sm text-gray-600">₹</span>
+                    <input
+                      type="number"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([parseInt(e.target.value) || 1000, priceRange[1]])}
+                      className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+                    />
                   </div>
                   <span className="text-gray-400">to</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">د.إ</span>
-                    <input type="number" value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 79])} className="w-16 px-2 py-1 border border-gray-300 rounded text-sm" />
+                    <span className="text-sm text-gray-600">₹</span>
+                    <input
+                      type="number"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 10000])}
+                      className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+                    />
                   </div>
                 </div>
               </div>

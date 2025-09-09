@@ -5,6 +5,7 @@ import ShopTheLook from "@/components/Shopthelook"
 import ProductSection from "@/components/ProductSection"
 import InfiniteScrollProducts from "@/components/InfiniteScrollProducts"
 import ServiceHighlights from "@/components/ServiceHighlights"
+import Marquee from "@/components/Marquee"
 // import AnnouncementBar from "@/components/AnnouncementBar"
 // import Header from "@/components/Header"
 // import DiscountPopup from "@/components/DiscountPopup"
@@ -19,7 +20,8 @@ export default function Home() {
       <ShopTheLook /> 
       {/* <SpecialBrand /> */}
       <ProductSection />
-      <InfiniteScrollProducts />
+      {/* <InfiniteScrollProducts /> */}
+      <Marquee />
       <ServiceHighlights />
     </main>
   )

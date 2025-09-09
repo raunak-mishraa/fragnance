@@ -6,7 +6,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import AnnouncementBar from './AnnouncementBar';
 
-// Custom icon components matching the provided image style
+const brands = [
+  "Pacific Intense", "Millionaire", "Woody Oud", "Vanilla Cigar", "Leatherette", "Cherry Bliss", 
+  "Y-King", "Aventis", "Mt. Silver", "The G.O.A.T", "Prisprysm", "SRK", "Hermes", "Most Hunted", 
+  "White Oud", "Addiction", "Pride", "Floral Garden", "The No 5", "Tropical Rush", "Alpha Male", 
+  "Savage", "Blue", "Aqua Vibe", "Aqua de Blu", "Nomad's Path", "Y S L Y", "Afgan", "Ispan", 
+  "Forever Yours", "Chrome", "Red Tobacco", "Drake Noir", "Tyger", "Eros Blue", "Legend", 
+  "Pink Tease", "Illusion", "Love Spell", "BR Five40", "Roses and More", "Delina", 
+  "Chocolate Eclairs", "Juicy Apple", "Tam Dam", "Iconic", "Boss", "Obsession", "Origins", 
+  "Cool Breeze"
+];
+
+// Custom icon components
 const UserIcon = ({ className, isScrolled, isHovered }: { className?: string, isScrolled: boolean, isHovered: boolean }) => (
   <svg className={className} aria-hidden="true" fill="none" focusable="false" width="24" viewBox="0 0 24 24">
     <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke={isScrolled || isHovered ? "#000000" : "#ffffff"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -66,41 +77,13 @@ const Header = () => {
     }
   };
 
+  const handleBrandClick = (brand: string) => {
+    const formattedBrand = brand.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/collections/${formattedBrand}`);
+  };
+
   const categories = {
-    'PRODUCTS': {
-      'LUXURY': [
-        'JOHN ASHWOOD LUXURY',
-        'TUSCAN COLLECTION',
-        'NASIWA / NASIWAN',
-        'CONCENTRATED PERFUME OIL',
-        'AGARWOOD',
-        'DEHNAL OUD'
-      ],
-      'FRENCH': [
-        'RDCROBERTA DI CAMERINO',
-        'XBOND',
-        'ORCHID',
-        'CLUB VIP',
-        'INSPIRED',
-        'DESIRE',
-        'COLORS',
-        'MYSTIC'
-      ],
-      'ORIENTAL': [
-        'KUBRA',
-        'GLORIOUS OUD',
-        'MASHAIRI',
-        'QASIDA',
-        'OUD',
-        'SAIF',
-        'PREMIUM FRAGRANCE',
-        'MOUSUF'
-      ],
-      'HOME FRAGRANCES': [
-        'REED DIFFUSER',
-        'BAKHOOR / INCENSE PASTILLES'
-      ]
-    },
+    'BRAND': brands,
     'COLLECTIONS': [],
     'SOCIAL HUB': [],
     'ABOUT US': [],
@@ -109,15 +92,15 @@ const Header = () => {
 
   return (
     <header
-  className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-    isScrolled || isHovered || isSearchOpen
-      ? 'bg-white shadow-sm'
-      : 'bg-transparent'
-  }`}
-  onMouseEnter={() => setIsHovered(true)}
-  onMouseLeave={() => setIsHovered(false)}
->
-  <AnnouncementBar className={`${isScrolled || isHovered ? 'hidden' : 'block'}`} />
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+        isScrolled || isHovered || isSearchOpen
+          ? 'bg-white shadow-sm'
+          : 'bg-transparent'
+      }`}
+      onMouseEnter={() => setTimeout(() => setIsHovered(true), 100)}
+      onMouseLeave={() => setTimeout(() => setIsHovered(false), 100)}
+    >
+      <AnnouncementBar className={`${isScrolled ? 'hidden' : 'block'}`} />
       <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {/* Top Header */}
         <motion.div 
@@ -143,7 +126,6 @@ const Header = () => {
                   showDark ? "hidden" : "block"
                 }`}
               />
-              {/* Dark Logo */}
               <Image
                 src="/assets/images/logo_dark.png"
                 alt="House of Perfumes Dark Logo"
@@ -156,9 +138,7 @@ const Header = () => {
             </div>
           </motion.div>
           
-          {/* Right Icons */}
           <div className="flex items-center space-x-6 absolute right-0">
-            {/* User Icon */}
             <motion.button 
               onClick={handleUserClick}
               className="transition-colors duration-300 cursor-pointer"
@@ -171,7 +151,6 @@ const Header = () => {
               <UserIcon className="h-6 w-6" isScrolled={isScrolled} isHovered={isHovered} />
             </motion.button>
 
-            {/* Search Icon */}
             <motion.button 
               onClick={handleSearchClick}
               className="transition-colors duration-300 cursor-pointer"
@@ -184,7 +163,6 @@ const Header = () => {
               <SearchIcon className="h-6 w-6" isScrolled={isScrolled} isHovered={isHovered} />
             </motion.button>
 
-            {/* Cart Icon */}
             <motion.button 
               onClick={handleCartClick}
               className="transition-colors duration-300 cursor-pointer"
@@ -199,7 +177,6 @@ const Header = () => {
           </div>
         </motion.div>
 
-        {/* Navigation Menu */}
         <motion.nav 
           className="flex justify-center space-x-8 pb-4"
           initial={{ opacity: 0, y: 20 }}
@@ -210,8 +187,8 @@ const Header = () => {
             <div 
               key={category}
               className="relative"
-              onMouseEnter={() => setHoveredCategory(category)}
-              onMouseLeave={() => setHoveredCategory(null)}
+              onMouseEnter={() => setTimeout(() => setHoveredCategory(category), 100)}
+              onMouseLeave={() => setTimeout(() => setHoveredCategory(null), 100)}
             >
               <motion.button
                 onClick={() => handleNavClick(category)}
@@ -225,23 +202,21 @@ const Header = () => {
                 transition={{ delay: 0.4 + index * 0.1 }}
               >
                 {category}
-                {/* Underline animation */}
                 <motion.div
                   className={`absolute top-full left-0 h-0.5 mt-4 z-50 ${
                     isScrolled || isHovered ? 'bg-black' : 'bg-white'
                   }`}
                   initial={{ width: 0 }}
                   animate={{ 
-                    width: hoveredCategory === category && category === 'PRODUCTS' ? '800px' : 
+                    width: hoveredCategory === category && category === 'BRAND' ? '800px' : 
                            hoveredCategory === category ? '100%' : 0 
                   }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
                 />
               </motion.button>
 
-              {/* Dropdown for PRODUCTS */}
               <AnimatePresence>
-                {hoveredCategory === 'PRODUCTS' && category === 'PRODUCTS' && (
+                {hoveredCategory === 'BRAND' && category === 'BRAND' && (
                   <motion.div
                     className="absolute top-full left-0 mt-4.5 bg-white border border-gray-200 shadow-xl z-50 overflow-hidden"
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -249,37 +224,18 @@ const Header = () => {
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <div className="grid grid-cols-4 gap-0 w-[800px]">
-                      {Object.entries(categories.PRODUCTS).map(([subCategory, items], subIndex) => (
-                        <motion.div 
-                          key={subCategory}
-                          className="p-6 border-r border-gray-100 last:border-r-0"
-                          initial={{ opacity: 0, x: -20 }}
+                    <div className="grid grid-cols-4 gap-0 w-[800px] p-6">
+                      {categories['BRAND'].map((brand, index) => (
+                        <motion.a
+                          key={brand}
+                          onClick={() => handleBrandClick(brand)}
+                          className="block text-xs text-gray-600 hover:text-black transition-colors tracking-wider py-1 cursor-pointer"
+                          initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: subIndex * 0.1 }}
+                          whileHover={{ x: 5, color: '#000' }}
                         >
-                          <motion.h3 
-                            className="font-semibold text-sm text-gray-900 mb-4 tracking-wider"
-                            whileHover={{ color: '#374151' }}
-                          >
-                            {subCategory}
-                          </motion.h3>
-                          <div className="space-y-2">
-                            {items.map((item, itemIndex) => (
-                              <motion.a
-                                key={item}
-                                href="#"
-                                className="block text-xs text-gray-600 hover:text-black transition-colors tracking-wider"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.1 + itemIndex * 0.05 }}
-                                whileHover={{ x: 5, color: '#000' }}
-                              >
-                                {item}
-                              </motion.a>
-                            ))}
-                          </div>
-                        </motion.div>
+                          {brand}
+                        </motion.a>
                       ))}
                     </div>
                   </motion.div>
@@ -289,7 +245,6 @@ const Header = () => {
           ))}
         </motion.nav>
 
-        {/* Search Bar */}
         <AnimatePresence>
           {isSearchOpen && (
             <motion.div
@@ -301,18 +256,15 @@ const Header = () => {
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="relative flex items-center">
-                  {/* Search Icon */}
                   <svg className="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  
                   <input
                     type="text"
                     placeholder="SEARCH FOR..."
                     className="flex-1 py-3 bg-transparent border-none outline-none text-black placeholder-gray-400 text-sm tracking-wider"
                     autoFocus
                   />
-                  
                   <button
                     onClick={() => setIsSearchOpen(false)}
                     className="ml-3 text-gray-400 hover:text-black transition-colors"
@@ -328,11 +280,9 @@ const Header = () => {
         </AnimatePresence>
       </div>
 
-      {/* Cart Sidebar */}
       <AnimatePresence>
         {isCartOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               className="fixed inset-0 bg-black/50 z-50"
               initial={{ opacity: 0 }}
@@ -340,8 +290,6 @@ const Header = () => {
               exit={{ opacity: 0 }}
               onClick={() => setIsCartOpen(false)}
             />
-            
-            {/* Cart Sidebar */}
             <motion.div
               className="fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 overflow-y-auto"
               initial={{ x: '100%' }}
@@ -350,7 +298,6 @@ const Header = () => {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             >
               <div className="p-6">
-                {/* Cart Header */}
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-light text-black">Shopping Cart</h2>
                   <button
@@ -362,8 +309,6 @@ const Header = () => {
                     </svg>
                   </button>
                 </div>
-
-                {/* Cart Content */}
                 <div className="text-center py-12">
                   <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                     <ShoppingBagIcon className="w-8 h-8" isScrolled={true} isHovered={false} />

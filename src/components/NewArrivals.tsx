@@ -1,44 +1,44 @@
-"use client"
+"use client";
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import React from "react";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 const NewArrivals = () => {
   const products = [
     {
       id: 1,
       name: "FAVOURITE",
-      price: "175.00",
-      currency: "DHS",
-      image: "/assets/products/favourite.jpg",
-      soldOut: true
+      price: "6999.00",
+      currency: "₹",
+      image: "/assets/images/new-arrivals/product-1.webp",
+      soldOut: true,
     },
     {
       id: 2,
       name: "LEGACY",
-      price: "175.00", 
-      currency: "DHS",
-      image: "/assets/products/legacy.jpg",
-      soldOut: true
+      price: "6999.00",
+      currency: "₹",
+      image: "/assets/images/new-arrivals/product-2.webp",
+      soldOut: true,
     },
     {
       id: 3,
       name: "OMGOT OUD",
-      price: "175.00",
-      currency: "DHS", 
-      image: "/assets/products/omgot-oud.jpg",
-      soldOut: true
+      price: "6999.00",
+      currency: "₹",
+      image: "/assets/images/new-arrivals/product-3.webp",
+      soldOut: true,
     },
     {
       id: 4,
       name: "MASHAM CLASSIC",
-      price: "122.00",
-      currency: "DHS",
-      image: "/assets/products/masham-classic.jpg",
-      soldOut: true
-    }
-  ]
+      price: "4899.00",
+      currency: "₹",
+      image: "/assets/images/new-arrivals/product-4.webp",
+      soldOut: true,
+    },
+  ];
 
   return (
     <section className="py-20 bg-gray-50">
@@ -78,18 +78,15 @@ const NewArrivals = () => {
                     </span>
                   </div>
                 )}
-                
+
                 {/* Product Image Container */}
                 <div className="aspect-square relative bg-gradient-to-br from-amber-100 to-amber-200">
-                  {/* Placeholder for product image */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-32 h-48 bg-gradient-to-b from-amber-600 to-amber-800 rounded-lg shadow-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-medium transform -rotate-12">
-                        {product.name}
-                      </span>
-                    </div>
-                  </div>
-                  
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover object-center transition-opacity duration-300 group-hover:opacity-90"
+                  />
                   {/* Hover Overlay */}
                   <motion.div
                     className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -130,7 +127,7 @@ const NewArrivals = () => {
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default NewArrivals
+export default NewArrivals;
