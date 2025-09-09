@@ -51,7 +51,7 @@ const OTPVerificationPage = () => {
       const { data } = await axios.post('/api/verify-otp', { email, otp: otpCode });
       console.log(data)
       toast.success('Email verified successfully!');
-      router.push('/profile');
+      router.push('/user/profile');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'An error occurred');
     } finally {
@@ -78,7 +78,7 @@ const OTPVerificationPage = () => {
 
     setIsLoading(true);
     try {
-      const { data } = await axios.post('/api/resend-otp', { email });
+      const { data } = await axios.post('/api/send-otp', { email });
         toast.success(data.message || 'OTP resent successfully!');
         setResendCooldown(60); // 60 seconds cooldown
     } catch (error) {

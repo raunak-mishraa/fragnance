@@ -5,6 +5,7 @@ import {
   Container,
   Text,
   Section,
+  Preview,
 } from "@react-email/components";
 
 interface VerifyOtpEmailProps {
@@ -15,7 +16,29 @@ interface VerifyOtpEmailProps {
 export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
   return (
     <Html>
-      <Head />
+      <Head>
+        {/* Mobile Responsive Styles */}
+        <style>{`
+          @media only screen and (max-width: 600px) {
+            .container {
+              padding: 24px 16px !important;
+              width: 100% !important;
+            }
+            .heading {
+              font-size: 20px !important;
+            }
+            .otp {
+              font-size: 22px !important;
+              letter-spacing: 4px !important;
+              padding: 12px 20px !important;
+            }
+            .text {
+              font-size: 14px !important;
+            }
+          }
+        `}</style>
+      </Head>
+      <Preview>Verify your email with OTP</Preview>
       <Body
         style={{
           fontFamily: "Arial, sans-serif",
@@ -26,18 +49,21 @@ export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
         }}
       >
         <Container
+          className="container"
           style={{
             margin: "0 auto",
             padding: "40px 32px",
             backgroundColor: "#ffffff",
             borderRadius: "14px",
             maxWidth: "500px",
+            width: "100%",
             boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
           }}
         >
           <Section>
             {/* Heading */}
             <Text
+              className="heading"
               style={{
                 fontSize: "24px",
                 fontWeight: "700",
@@ -51,6 +77,7 @@ export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
 
             {/* Greeting */}
             <Text
+              className="text"
               style={{
                 fontSize: "15px",
                 marginBottom: "20px",
@@ -63,6 +90,7 @@ export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
 
             {/* Instruction */}
             <Text
+              className="text"
               style={{
                 fontSize: "15px",
                 marginBottom: "20px",
@@ -75,8 +103,9 @@ export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
 
             {/* OTP Box */}
             <Text
+              className="otp"
               style={{
-                display: "inline-block",
+                display: "block",
                 padding: "16px 28px",
                 fontSize: "28px",
                 fontWeight: "bold",
@@ -87,6 +116,7 @@ export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
                 color: "#111827",
                 margin: "0 auto 24px",
                 width: "100%",
+                boxSizing: "border-box",
               }}
             >
               {otp}
@@ -94,6 +124,7 @@ export default function VerifyOtpEmail({ otp, email }: VerifyOtpEmailProps) {
 
             {/* Expiry Note */}
             <Text
+              className="text"
               style={{
                 fontSize: "13px",
                 color: "#6b7280",

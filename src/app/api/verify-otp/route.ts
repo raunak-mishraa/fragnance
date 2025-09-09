@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
-
+// console.log(JWT_SECRET)
 export async function POST(req: Request) {
   try {
     const { email, otp } = await req.json();
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
     // Generate JWT
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { id: user.id, email: user.email, role: "user" },
       JWT_SECRET,
       { expiresIn: "7d" }
     );

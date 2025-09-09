@@ -1,7 +1,6 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -15,6 +14,7 @@ model User {
   isVerified Boolean    @default(false)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+
   addresses  Address[]
   carts      Cart[]
   otps       OTP[]      @relation("UserOTPs")
@@ -30,6 +30,7 @@ model Admin {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   isVerified Boolean    @default(false)
+
   otps       AdminOTP[]
 }
 
@@ -40,6 +41,7 @@ model AdminOTP {
   used      Boolean  @default(false)
   email     String
   createdAt DateTime @default(now())
+
   adminId   String?
   admin     Admin?   @relation(fields: [adminId], references: [id])
 
@@ -54,24 +56,26 @@ model OTP {
   userId    String?
   email     String
   createdAt DateTime @default(now())
+
   user      User?    @relation("UserOTPs", fields: [userId], references: [id])
 
   @@index([userId], map: "OTP_userId_fkey")
 }
 
 model Address {
-  id        String  @id @default(cuid())
-  userId    String
-  fullName  String
-  phone     String
-  street    String
-  city      String
-  state     String
-  zip       String
-  country   String
-  isDefault Boolean @default(false)
-  user      User    @relation(fields: [userId], references: [id])
-  orders    Order[]
+  id          String   @id @default(cuid())
+  userId      String
+  addressType String   // Home, Office, Other
+  phone       String
+  street      String
+  city        String
+  state       String
+  zip         String
+  country     String
+  isDefault   Boolean  @default(false)
+
+  user        User     @relation(fields: [userId], references: [id])
+  orders      Order[]
 
   @@index([userId], map: "Address_userId_fkey")
 }
@@ -79,48 +83,80 @@ model Address {
 model Brand {
   id       String    @id @default(cuid())
   name     String    @unique
+
   perfumes Perfume[]
 }
 
-model Category {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  perfumes Perfume[]
+enum Category {
+  male
+  female
+  unisex
 }
 
 model Perfume {
-  id          String           @id @default(cuid())
-  name        String
+  id          String          @id @default(cuid())
+  flavor      String
+  mrp         Decimal         @db.Decimal(10, 2)
+  size        String
+  type        PerfumeType
+  category    Category
   description String?
-  price       Decimal          @db.Decimal(10, 2)
-  stock       Int              @default(0)
-  imageUrl    String?
-  gender      Gender
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
   brandId     String?
-  categoryId  String?
+
   cartItems   CartItem[]
   orderItems  OrderItem[]
-  brand       Brand?           @relation(fields: [brandId], references: [id])
-  category    Category?        @relation(fields: [categoryId], references: [id])
+  brand       Brand?          @relation(fields: [brandId], references: [id])
   variants    PerfumeVariant[]
   reviews     Review[]
   wishlist    Wishlist[]
+  fragrance   FragranceNotes?
+  images      PerfumeImage[]
 
   @@index([brandId], map: "Perfume_brandId_fkey")
-  @@index([categoryId], map: "Perfume_categoryId_fkey")
 }
 
 model PerfumeVariant {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   volumeMl  Int
-  price     Decimal @db.Decimal(10, 2)
-  stock     Int     @default(0)
+  price     Decimal  @db.Decimal(10, 2)
+  stock     Int      @default(0)
+
   perfumeId String
-  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
 
   @@index([perfumeId], map: "PerfumeVariant_perfumeId_fkey")
+}
+
+model FragranceNotes {
+  id          String   @id @default(cuid())
+  topNotes    String?
+  middleNotes String?
+  baseNotes   String?
+
+  perfumeId   String   @unique
+  perfume     Perfume  @relation(fields: [perfumeId], references: [id])
+}
+
+model PerfumeImage {
+  id        String   @id @default(cuid())
+  url       String
+  altText   String?
+
+  perfumeId String
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+
+  @@index([perfumeId], map: "PerfumeImage_perfumeId_fkey")
+}
+
+enum PerfumeType {
+  eau_de_parfum
+  eau_de_toilette
+  cologne
+  perfume_oil
+  body_spray
 }
 
 model Cart {
@@ -128,6 +164,7 @@ model Cart {
   userId    String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
   user      User       @relation(fields: [userId], references: [id])
   items     CartItem[]
 
@@ -135,27 +172,29 @@ model Cart {
 }
 
 model CartItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   cartId    String
   perfumeId String
-  quantity  Int     @default(1)
-  cart      Cart    @relation(fields: [cartId], references: [id])
-  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+  quantity  Int      @default(1)
+
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
 
   @@index([cartId], map: "CartItem_cartId_fkey")
   @@index([perfumeId], map: "CartItem_perfumeId_fkey")
 }
 
 model Order {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   userId      String
-  status      OrderStatus @default(PENDING)
-  totalAmount Decimal     @db.Decimal(10, 2)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  status      OrderStatus  @default(PENDING)
+  totalAmount Decimal      @db.Decimal(10, 2)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   shippingId  String?
-  shipping    Address?    @relation(fields: [shippingId], references: [id])
-  user        User        @relation(fields: [userId], references: [id])
+
+  shipping    Address?     @relation(fields: [shippingId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
   items       OrderItem[]
   payment     Payment?
 
@@ -164,13 +203,14 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   orderId   String
   perfumeId String
   quantity  Int
-  price     Decimal @db.Decimal(10, 2)
-  order     Order   @relation(fields: [orderId], references: [id])
-  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+  price     Decimal  @db.Decimal(10, 2)
+
+  order     Order    @relation(fields: [orderId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
 
   @@index([orderId], map: "OrderItem_orderId_fkey")
   @@index([perfumeId], map: "OrderItem_perfumeId_fkey")
@@ -183,6 +223,7 @@ model Payment {
   amount    Decimal       @db.Decimal(10, 2)
   status    PaymentStatus @default(PENDING)
   createdAt DateTime      @default(now())
+
   order     Order         @relation(fields: [orderId], references: [id])
 }
 
@@ -193,6 +234,7 @@ model Review {
   rating    Int
   comment   String?
   createdAt DateTime @default(now())
+
   perfume   Perfume  @relation(fields: [perfumeId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 
@@ -201,11 +243,12 @@ model Review {
 }
 
 model Wishlist {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   perfumeId String
-  perfume   Perfume @relation(fields: [perfumeId], references: [id])
-  user      User    @relation(fields: [userId], references: [id])
+
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([perfumeId], map: "Wishlist_perfumeId_fkey")
   @@index([userId], map: "Wishlist_userId_fkey")

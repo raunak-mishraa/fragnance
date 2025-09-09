@@ -1,0 +1,21 @@
+[
+  {
+    "id": "e0cd913c-fd3e-4b5f-9edd-d192cf9e3473",
+    "name": "Raunak",
+    "flavor": "woody",
+    "mrp": 70,
+    "description": "this prodfd",
+    "category": "eau-de-toilette",
+    "size": "50",
+    "type": "womens",
+    "fragranceNotes": {
+      "topNotes": "Lemon, bernat",
+      "middleNotes": "rose, jasmine",
+      "baseNotes": "vanila"
+    },
+    "images": [
+      "/uploads/adec4f59-4f83-4fe7-adde-2becf0ef05a1-test_2.jpg",
+      "/uploads/9667419f-5e18-42c7-84b7-f7c247293b48-test_3.jpg"
+    ]
+  }
+]
