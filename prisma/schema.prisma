@@ -83,13 +83,13 @@ model Address {
 model Brand {
   id       String    @id @default(cuid())
   name     String    @unique
-
+  slug     String  @unique
   perfumes Perfume[]
 }
 
 enum Category {
-  male
-  female
+  men
+  women
   unisex
 }
 
@@ -113,7 +113,7 @@ model Perfume {
   reviews     Review[]
   wishlist    Wishlist[]
   fragrance   FragranceNotes?
-  images      PerfumeImage[]
+  images      PerfumeImage[] 
 
   @@index([brandId], map: "Perfume_brandId_fkey")
 }
@@ -125,7 +125,7 @@ model PerfumeVariant {
   stock     Int      @default(0)
 
   perfumeId String
-  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
 
   @@index([perfumeId], map: "PerfumeVariant_perfumeId_fkey")
 }
@@ -137,7 +137,7 @@ model FragranceNotes {
   baseNotes   String?
 
   perfumeId   String   @unique
-  perfume     Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume     Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
 }
 
 model PerfumeImage {
@@ -178,7 +178,7 @@ model CartItem {
   quantity  Int      @default(1)
 
   cart      Cart     @relation(fields: [cartId], references: [id])
-  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
 
   @@index([cartId], map: "CartItem_cartId_fkey")
   @@index([perfumeId], map: "CartItem_perfumeId_fkey")
@@ -210,7 +210,7 @@ model OrderItem {
   price     Decimal  @db.Decimal(10, 2)
 
   order     Order    @relation(fields: [orderId], references: [id])
-  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
 
   @@index([orderId], map: "OrderItem_orderId_fkey")
   @@index([perfumeId], map: "OrderItem_perfumeId_fkey")
@@ -235,7 +235,7 @@ model Review {
   comment   String?
   createdAt DateTime @default(now())
 
-  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([perfumeId], map: "Review_perfumeId_fkey")
@@ -247,17 +247,11 @@ model Wishlist {
   userId    String
   perfumeId String
 
-  perfume   Perfume  @relation(fields: [perfumeId], references: [id])
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([perfumeId], map: "Wishlist_perfumeId_fkey")
   @@index([userId], map: "Wishlist_userId_fkey")
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  UNISEX
 }
 
 enum OrderStatus {
@@ -273,4 +267,19 @@ enum PaymentStatus {
   SUCCESS
   FAILED
   REFUNDED
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String?
+  phone     String
+  email     String
+  country   String
+  city      String
+  source    String
+  subject   String
+  message   String
+  status    String   @default("pending") // pending | resolved
+  createdAt DateTime @default(now())
 }

@@ -1,9 +1,11 @@
-"use client"
+// app/contact/page.tsx
+"use client";
 
-import { useState } from "react"
-import { ChevronDown, Gift } from "lucide-react"
-import Image from "next/image"
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { Gift } from "lucide-react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -15,34 +17,52 @@ export default function ContactPage() {
     source: "",
     subject: "",
     message: "",
-    file: null as File | null,
-  })
+  });
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFormData((prev) => ({ ...prev, file: e.target.files![0] }))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        alert("Message sent successfully!");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          phone: "",
+          email: "",
+          country: "",
+          city: "",
+          source: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        alert("Something went wrong.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting form.");
     }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted", formData)
-    // send formData via API / email service here
-  }
+  };
 
   return (
     <div className="w-full">
       <section className="relative h-[80vh] bg-black overflow-hidden">
-        {/* Background Image */}
         <Image
           src="/assets/images/aboutImage.jpg"
           alt="About Us Background"
@@ -50,11 +70,7 @@ export default function ContactPage() {
           priority
           className="object-cover object-center opacity-70"
         />
-
-        {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50" />
-
-        {/* Centered About Us Text */}
         <motion.h1
           className="absolute inset-0 flex items-center justify-center text-white text-4xl md:text-6xl font-light tracking-wider"
           initial={{ opacity: 0, y: -30 }}
@@ -65,9 +81,8 @@ export default function ContactPage() {
         </motion.h1>
       </section>
 
-      {/* Contact Form */}
       <section className="bg-gray-100 py-16">
-        <div className="max-w-2xl mx-auto px-4"> {/* ⬅️ decreased width from 4xl to 2xl */}
+        <div className="max-w-2xl mx-auto px-4">
           <h2 className="text-center text-xl font-semibold tracking-[0.3em] mb-10 uppercase text-black">
             Contact Us
           </h2>
@@ -76,6 +91,7 @@ export default function ContactPage() {
             onSubmit={handleSubmit}
             className="bg-white shadow-md rounded-lg p-8 space-y-6 text-black"
           >
+            
             {/* Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -204,27 +220,20 @@ export default function ContactPage() {
             {/* Message */}
             <div>
               <label className="block text-sm mb-1 text-black">
-                Please write your inquiry**
+                Please write your inquiry*
               </label>
               <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
+                required
                 className="w-full border rounded px-3 py-2 text-black"
               />
             </div>
 
-            {/* File Upload */}
-            <div>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                className="block text-sm text-black"
-              />
-            </div>
+          
 
-            {/* Submit */}
             <button
               type="submit"
               className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition"
@@ -235,7 +244,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Bottom Features */}
       <section className="bg-gray-100 py-12 border-t">
         <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
@@ -244,7 +252,10 @@ export default function ContactPage() {
             "TOP-NOTCH SUPPORT",
             "SECURE PAYMENTS",
           ].map((text, i) => (
-            <div key={i} className="flex flex-col items-center space-y-2 text-black">
+            <div
+              key={i}
+              className="flex flex-col items-center space-y-2 text-black"
+            >
               <Gift size={22} className="text-black" />
               <p className="text-xs tracking-widest uppercase">{text}</p>
             </div>
@@ -252,5 +263,5 @@ export default function ContactPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

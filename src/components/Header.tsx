@@ -5,17 +5,9 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import AnnouncementBar from './AnnouncementBar';
-
-const brands = [
-  "Pacific Intense", "Millionaire", "Woody Oud", "Vanilla Cigar", "Leatherette", "Cherry Bliss", 
-  "Y-King", "Aventis", "Mt. Silver", "The G.O.A.T", "Prisprysm", "SRK", "Hermes", "Most Hunted", 
-  "White Oud", "Addiction", "Pride", "Floral Garden", "The No 5", "Tropical Rush", "Alpha Male", 
-  "Savage", "Blue", "Aqua Vibe", "Aqua de Blu", "Nomad's Path", "Y S L Y", "Afgan", "Ispan", 
-  "Forever Yours", "Chrome", "Red Tobacco", "Drake Noir", "Tyger", "Eros Blue", "Legend", 
-  "Pink Tease", "Illusion", "Love Spell", "BR Five40", "Roses and More", "Delina", 
-  "Chocolate Eclairs", "Juicy Apple", "Tam Dam", "Iconic", "Boss", "Obsession", "Origins", 
-  "Cool Breeze"
-];
+import { fetchCart, removeFromCart, updateQuantity } from '@/slices/cartSlice';
+import { AppDispatch, RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Custom icon components
 const UserIcon = ({ className, isScrolled, isHovered }: { className?: string, isScrolled: boolean, isHovered: boolean }) => (
@@ -44,7 +36,30 @@ const Header = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [brands, setBrands] = useState<{ id: string; name: string, slug: string }[]>([]);
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { items } = useSelector((state: RootState) => state.cart);
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]); 
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const res = await fetch("/api/brands");
+        if (!res.ok) throw new Error("Failed to fetch brands");
+        const data = await res.json();
+        console.log("Fetched brands:", data);
+        setBrands(data);
+      } catch (err) {
+        console.error("Error fetching brands:", err);
+      }
+    };
+    fetchBrands();
+  }, []);
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,9 +92,18 @@ const Header = () => {
     }
   };
 
-  const handleBrandClick = (brand: string) => {
-    const formattedBrand = brand.toLowerCase().replace(/\s+/g, '-');
-    router.push(`/collections/${formattedBrand}`);
+  const handleBrandClick = (slug: string) => {
+    router.push(`/collections/${slug}`);
+  };
+
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    router.push('/checkout');
+  };
+
+  const handleViewCart = () => {
+    setIsCartOpen(false);
+    router.push('/cart');
   };
 
   const categories = {
@@ -89,6 +113,9 @@ const Header = () => {
     'ABOUT US': [],
     'CONTACT US': []
   };
+
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + (item.perfume.mrp * item.quantity), 0);
 
   return (
     <header
@@ -138,7 +165,7 @@ const Header = () => {
             </div>
           </motion.div>
           
-          <div className="flex items-center space-x-6 absolute right-0">
+          <div className="flex items-center space-x-6 absolute right-0 ">
             <motion.button 
               onClick={handleUserClick}
               className="transition-colors duration-300 cursor-pointer"
@@ -165,7 +192,7 @@ const Header = () => {
 
             <motion.button 
               onClick={handleCartClick}
-              className="transition-colors duration-300 cursor-pointer"
+              className="transition-colors duration-300 cursor-pointer relative"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, x: 20 }}
@@ -173,6 +200,11 @@ const Header = () => {
               transition={{ delay: 0.4 }}
             >
               <ShoppingBagIcon className="h-6 w-6" isScrolled={isScrolled} isHovered={isHovered} />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </motion.button>
           </div>
         </motion.div>
@@ -196,7 +228,7 @@ const Header = () => {
                   isScrolled || isHovered 
                     ? 'text-black hover:text-gray-600' 
                     : 'text-white hover:text-gray-300'
-                } text-sm font-light tracking-wider py-2 px-1 relative block transition-colors duration-300 cursor-pointer`}
+                } text-sm font-extralight tracking-extra py-2 px-1 relative block transition-colors duration-300 cursor-pointer`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
@@ -225,18 +257,18 @@ const Header = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="grid grid-cols-4 gap-0 w-[800px] p-6">
-                      {categories['BRAND'].map((brand, index) => (
-                        <motion.a
-                          key={brand}
-                          onClick={() => handleBrandClick(brand)}
-                          className="block text-xs text-gray-600 hover:text-black transition-colors tracking-wider py-1 cursor-pointer"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          whileHover={{ x: 5, color: '#000' }}
-                        >
-                          {brand}
-                        </motion.a>
-                      ))}
+                      {categories["BRAND"].map((brand) => (
+                      <motion.a
+                        key={brand.id}
+                        onClick={() => handleBrandClick(brand.slug)}
+                        className="block text-xs text-gray-600 hover:text-black transition-colors tracking-wider py-1 cursor-pointer uppercase tracking-extra"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        whileHover={{ x: 5, color: "#000" }}
+                      >
+                        {brand.name}
+                      </motion.a>
+                    ))}
                     </div>
                   </motion.div>
                 )}
@@ -299,7 +331,7 @@ const Header = () => {
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-light text-black">Shopping Cart</h2>
+                  <h2 className="text-xl font-light text-black">Shopping Cart ({totalItems})</h2>
                   <button
                     onClick={() => setIsCartOpen(false)}
                     className="text-gray-400 hover:text-black transition-colors"
@@ -309,18 +341,107 @@ const Header = () => {
                     </svg>
                   </button>
                 </div>
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                    <ShoppingBagIcon className="w-8 h-8" isScrolled={true} isHovered={false} />
+
+                {items.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <ShoppingBagIcon className="w-8 h-8" isScrolled={true} isHovered={false} />
+                    </div>
+                    <p className="text-gray-600 mb-4">Your cart is empty</p>
+                    <button
+                      onClick={() => setIsCartOpen(false)}
+                      className="bg-black text-white px-6 py-2 text-sm font-medium tracking-wider hover:bg-gray-800 transition-colors"
+                    >
+                      CONTINUE SHOPPING
+                    </button>
                   </div>
-                  <p className="text-gray-600 mb-4">Your cart is empty</p>
-                  <button
-                    onClick={() => setIsCartOpen(false)}
-                    className="bg-black text-white px-6 py-2 text-sm font-medium tracking-wider hover:bg-gray-800 transition-colors"
-                  >
-                    CONTINUE SHOPPING
-                  </button>
-                </div>
+                ) : (
+                  <>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between border-b pb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
+                              {item.perfume.images && item.perfume.images.length > 0 ? (
+                                <Image
+                                  src={item.perfume.images[0].url}
+                                  alt={item.perfume.flavor}
+                                  width={64}
+                                  height={64}
+                                  className="object-contain w-12 h-12"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-200 rounded"></div>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{item.perfume.flavor}</p>
+                              <p className="text-xs text-gray-500">{item.perfume.brand?.name}</p>
+                              <p className="text-sm font-medium">DHS. {item.perfume.mrp}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1">
+                              <button
+                                onClick={() => dispatch(updateQuantity({
+                                  itemId: item.id,
+                                  quantity: item.quantity - 1
+                                }))}
+                                disabled={item.quantity <= 1}
+                                className="w-6 h-6 flex items-center justify-center border rounded text-xs disabled:opacity-50"
+                              >
+                                -
+                              </button>
+                              <span className="text-sm w-6 text-center">{item.quantity}</span>
+                              <button
+                                onClick={() => dispatch(updateQuantity({
+                                  itemId: item.id,
+                                  quantity: item.quantity + 1
+                                }))}
+                                className="w-6 h-6 flex items-center justify-center border rounded text-xs"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <button
+                              onClick={() => dispatch(removeFromCart({ itemId: item.id }))}
+                              className="text-red-500 text-sm"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-sm font-medium">Subtotal</span>
+                        <span className="text-lg font-medium">DHS. {subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <button
+                          onClick={handleCheckout}
+                          className="w-full bg-black text-white py-3 text-sm font-medium tracking-wider hover:bg-gray-800 transition-colors"
+                        >
+                          CHECKOUT
+                        </button>
+                        <button
+                          onClick={handleViewCart}
+                          className="w-full border border-black text-black py-3 text-sm font-medium tracking-wider hover:bg-gray-100 transition-colors"
+                        >
+                          VIEW CART
+                        </button>
+                        <button
+                          onClick={() => setIsCartOpen(false)}
+                          className="w-full text-gray-500 py-2 text-sm hover:text-black transition-colors"
+                        >
+                          CONTINUE SHOPPING
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </motion.div>
           </>

@@ -19,9 +19,9 @@ const services = [
   },
 ];
 
-export default function ServiceHighlights() {
+export default function ServiceHighlights({ color = "bg-white" }: { color?: string }) {
   return (
-    <section className="bg-gray-100 border-t border-gray-200 py-10">
+    <section className={`border-t border-gray-200 py-14 ${color} border-t border-gray-300`}>
       <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         {services.map((service, index) => (
           <div key={index} className="flex flex-col items-center space-y-3">

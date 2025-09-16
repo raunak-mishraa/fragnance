@@ -3,7 +3,7 @@ import { z } from "zod";
 export const insertProductSchema = z.object({
   brandId: z.string().min(1, "Brand is required"),
   flavor: z.string().min(1, "Flavor is required"),
-  mrp: z.number().min(0, "MRP must be at least 0"),
+  mrp: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid MRP"),
   description: z.string().min(1, "Description is required"),
   category: z.string().min(1, "Category is required"),
   size: z.string().min(1, "Size is required"),

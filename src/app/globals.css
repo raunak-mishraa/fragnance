@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --main-color:#EFEFEF;
   --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -73,10 +74,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* body {
-  background-color: #000;
-  font-family: 'Inter', sans-serif;
-} */
 @keyframes fadeSlide {
   0% {
     transform: translateY(100%);
@@ -183,4 +180,18 @@
 
 .animate-marquee-right {
   animation: marquee-right 24s linear infinite;
+}
+@layer utilities {
+  /* letter-spacing (character spacing) */
+  .tracking-extra { letter-spacing: 0.1em; }   
+  .tracking-mid { letter-spacing: 0.2em; }
+  .tracking-super { letter-spacing: 0.4em; }
+  .main-color { color: var(--primary); }
+
+  .font-small { font-size: 0.690rem; } 
+  .font-deem { font-weight: 100; }
+  /* word-spacing (space between words) */
+  .word-spacing-sm  { word-spacing: 0.15rem; }  /* 4px */
+  .word-spacing-md  { word-spacing: 0.5rem; }   /* 8px */
+  .word-spacing-lg  { word-spacing: 1rem; }     /* 16px */
 }

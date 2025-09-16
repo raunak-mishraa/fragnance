@@ -1,25 +1,43 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+'use client';
+
 import "@/app/globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useDispatch } from "react-redux";
+import { setUser, clearUser } from "@/slices/userSlice";
+import { useEffect } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "House of Perfumes",
-  description: "Discover exquisite perfumes and fragrances.",
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/me");
+        if (res.ok) {
+          const data = await res.json();
+          dispatch(setUser(data.user));
+        } else {
+          dispatch(clearUser());
+        }
+      } catch {
+        dispatch(clearUser());
+      }
+    };
+
+    checkAuth();
+  }, [dispatch]);
+
   return (
     <>
       <Header />
-      {children}
+      <main>
+        {children}
+      </main>
       <Footer />
     </>
   );

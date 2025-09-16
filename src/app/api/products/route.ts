@@ -8,11 +8,51 @@ import { PerfumeType, Category } from "@prisma/client";
 const UPLOAD_DIR = path.join(process.cwd(), "public/uploads");
 
 // ✅ GET /api/products
+// export async function GET(request: NextRequest) {
+//   const { searchParams } = request.nextUrl;
+//   const search = searchParams.get("search")?.toLowerCase() || "";
+//   const category = searchParams.get("category") as Category | null;
+//   const type = searchParams.get("type") as PerfumeType | null;
+
+//   try {
+//     const products = await prisma.perfume.findMany({
+//       where: {
+//         AND: [
+//           search ? { flavor: { contains: search } } : {},
+//           category ? { category } : {},
+//           type ? { type } : {},
+//         ],
+//       },
+//       include: {
+//         brand: true,
+//         images: true,
+//         fragrance: true,
+//       },
+//       orderBy: { createdAt: "desc" },
+//     });
+
+//     return NextResponse.json(products);
+//   } catch (error) {
+//     console.error("GET /api/products error:", error);
+//     return NextResponse.json(
+//       { error: "Failed to fetch products" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const search = searchParams.get("search")?.toLowerCase() || "";
+
+  const search = searchParams.get("search") || "";
   const category = searchParams.get("category") as Category | null;
   const type = searchParams.get("type") as PerfumeType | null;
+  const brand = searchParams.get("brand") || null;
+  const size = searchParams.get("size") || null;
+  // const inStock = searchParams.get("inStock") === "true";
+
+  const minPrice = parseFloat(searchParams.get("minPrice") || "0");
+  const maxPrice = parseFloat(searchParams.get("maxPrice") || "1000000");
 
   try {
     const products = await prisma.perfume.findMany({
@@ -21,12 +61,30 @@ export async function GET(request: NextRequest) {
           search ? { flavor: { contains: search } } : {},
           category ? { category } : {},
           type ? { type } : {},
+          brand ? { brand: { slug: brand } } : {},
+          size ? { size } : {},
+          {
+            mrp: {
+              gte: minPrice,
+              lte: maxPrice,
+            },
+          },
+          // inStock
+          //   ? {
+          //       variants: {
+          //         some: {
+          //           stock: { gt: 0 },
+          //         },
+          //       },
+          //     }
+          //   : {},
         ],
       },
       include: {
         brand: true,
         images: true,
         fragrance: true,
+        variants: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -55,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     const data = JSON.parse(dataStr);
     console.log("Received data:", data);
-
+    console.log(formData)
     // Upload images
     const images: string[] = [];
     let i = 0;
@@ -70,6 +128,7 @@ export async function POST(request: NextRequest) {
       await fs.writeFile(uploadPath, buffer);
 
       images.push(`/uploads/${filename}`);
+
       i++;
     }
 

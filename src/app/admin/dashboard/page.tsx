@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { BellIcon, User } from "lucide-react";
 import Sidebar from "@/components/sidebar";
 import ProductsTab from "@/components/ProductTabs";
-
+import UserQueriesTab from "@/components/UserQueriesTab"; 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("products");
 
@@ -61,6 +61,9 @@ export default function AdminDashboard() {
                 Track sales and performance
               </p>
             </div>
+          )}
+          {tab === "queries" && (
+            <UserQueriesTab />
           )}
         </div>
       </main>

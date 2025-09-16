@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import UserNavbar from "@/components/user/UserNavbar";
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "House of Perfumes",
-  description: "Discover exquisite perfumes and fragrances.",
+  title: "User Dashboard - ScentSkape",
+  description: "Manage your profile and orders.",
 };
 
 export default function RootLayout({
@@ -16,7 +14,7 @@ export default function RootLayout({
   return (
     <>
       <UserNavbar />
-      <main className="min-h-screen">
+      <main className="min-h-screen pt-10">
         {children}
       </main>
     </>

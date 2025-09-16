@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Instrument_Sans } from "next/font/google";
 import { Providers } from "@/lib/provider";
 import "./globals.css";
-const inter = Inter({ subsets: ["latin"] });
+const instrument = Instrument_Sans({ subsets: ["latin-ext"] });
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${instrument.className}`}>
           <Toaster position="bottom-right" />
           <Providers>
             {children}

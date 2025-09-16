@@ -54,12 +54,22 @@ const brands = [
   "Cool Breeze"
 ];
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 async function main() {
   for (const name of brands) {
     await prisma.brand.upsert({
       where: { name },
       update: {},
-      create: { name },
+      create: {
+        name,
+        slug: slugify(name), // ✅ provide slug here
+      },
     });
   }
   console.log('All brands created ✅');

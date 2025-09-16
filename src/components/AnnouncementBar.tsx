@@ -25,11 +25,11 @@ export default function AnnouncementBar({ className = "" }: { className?: string
   const nextMessage = () => setIndex((prev) => (prev + 1) % messages.length)
 
   return (
-    <div className={`w-full bg-[#1C1C1C] text-white text-sm tracking-widest uppercase flex items-center justify-center relative h-10 ${className}`}>
+    <div className={`w-full bg-[#1C1C1C] font-deem text-white font-small tracking-mid uppercase flex items-center justify-center relative h-10 ${className}`}>
       {/* Left arrow */}
       <button
         onClick={prevMessage}
-        className="absolute left-1/2 -translate-x-100 text-gray-400 hover:text-white transition"
+        className="absolute left-1/2 -translate-x-100 text-white"
       >
         <ChevronLeft size={18} />
       </button>
@@ -38,7 +38,7 @@ export default function AnnouncementBar({ className = "" }: { className?: string
       <div className="overflow-hidden">
         <p
           key={index}
-          className="animate-fadeSlide px-6 text-center whitespace-nowrap"
+          className="animate-fadeSlide px-6 text-center whitespace-nowrap "
         >
           {messages[index]}
         </p>
@@ -47,7 +47,7 @@ export default function AnnouncementBar({ className = "" }: { className?: string
       {/* Right arrow */}
       <button
         onClick={nextMessage}
-        className="absolute right-1/2 translate-x-100 text-gray-400 hover:text-white transition"
+        className="absolute right-1/2 translate-x-100 text-white"
       >
         <ChevronRight size={18} />
       </button>

@@ -22,6 +22,7 @@ export default function Sidebar({ tab, setTab }: { tab: string; setTab: (tab: st
     { key: "products", label: "Products", icon: Package },
     { key: "orders", label: "Orders", icon: ShoppingCart },
     { key: "customers", label: "Customers", icon: Users },
+    { key: "queries", label: "User Queries", icon: Users },
     { key: "analytics", label: "Analytics", icon: BarChart3 },
   ];
 
@@ -33,7 +34,7 @@ export default function Sidebar({ tab, setTab }: { tab: string; setTab: (tab: st
 
       if (res.ok) {
         // Clear any client state if needed
-        router.push("/admin/login"); // redirect to login
+        router.push("/"); // redirect to home or login page
       } else {
         console.error("Logout failed");
       }
