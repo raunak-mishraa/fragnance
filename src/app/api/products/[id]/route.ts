@@ -9,7 +9,8 @@ const UPLOAD_DIR = path.join(process.cwd(), "public/uploads");
 
 // ✅ PUT /api/products/[id]
 // ✅ PUT /api/products/[id]
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await context.params;
     const formData = await request.formData();
@@ -103,7 +104,7 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
 // ✅ DELETE /api/products/[id]
 export async function DELETE(
    request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params; // ✅ no await
 
@@ -125,7 +126,7 @@ export async function DELETE(
 // ✅ GET /api/products/[id]
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params; // ✅ no await
   try {

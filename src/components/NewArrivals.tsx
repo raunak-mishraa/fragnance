@@ -3,8 +3,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 const NewArrivals = () => {
+  const router = useRouter();
   const products = [
     {
       id: 1,
@@ -71,13 +72,13 @@ const NewArrivals = () => {
               {/* Product Image */}
               <div className="relative mb-4 overflow-hidden bg-white">
                 {/* Sold Out Badge */}
-                {product.soldOut && (
+                {/* {product.soldOut && (
                   <div className="absolute top-3 left-3 z-10">
                     <span className="bg-gray-800 text-white text-xs font-medium px-2 py-1 tracking-wider">
                       SOLD OUT
                     </span>
                   </div>
-                )}
+                )} */}
 
                 {/* Product Image Container */}
                 <div className="aspect-square relative bg-gradient-to-br from-amber-100 to-amber-200">
@@ -118,8 +119,8 @@ const NewArrivals = () => {
           viewport={{ once: true }}
         >
           <motion.button
-            className="bg-black text-white px-8 py-3 text-sm font-medium tracking-wider hover:bg-gray-800 transition-colors duration-300"
-            whileHover={{ scale: 1.05 }}
+            onClick={() => router.push('/collections/new-arrivals')}
+            className="bg-black text-white px-8 py-3 text-sm font-medium tracking-wider hover:bg-[#F9FAFB] hover:border-black border-2 hover:text-black transition-colors duration-300"
             whileTap={{ scale: 0.95 }}
           >
             VIEW ALL

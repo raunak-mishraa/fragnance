@@ -85,11 +85,11 @@ export default function ShopTheLook() {
           {currentBrand.products.map((product) => (
             <button
               key={product.id}
-              className="absolute w-6 h-6 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center shadow"
+              className="absolute w-6 h-6 bg-white border-2 border-white rounded-full flex items-center justify-center shadow"
               style={{ top: product.hotspot.top, left: product.hotspot.left }}
               onClick={() => setSelectedProduct(product)}
             >
-              <span className="w-2 h-2 bg-gray-800 rounded-full"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
             </button>
           ))}
         </div>

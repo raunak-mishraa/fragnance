@@ -81,13 +81,13 @@ const ProductCard = ({ product, index }: { product: Product; index: number }) =>
       {/* Product Image */}
       <div className="relative mb-4 overflow-hidden bg-white">
         {/* Sold Out Badge */}
-        {isSoldOut && (
+        {/* {isSoldOut && (
           <div className="absolute top-3 left-3 z-10">
             <span className="bg-gray-800 text-white text-xs font-medium px-2 py-1 tracking-wider">
               SOLD OUT
             </span>
           </div>
-        )}
+        )} */}
 
         {/* Product Image Container */}
         <div className="aspect-square relative bg-gradient-to-br from-amber-100 to-amber-200">
@@ -271,7 +271,7 @@ export default function ProductListingPage() {
         <div className="absolute inset-0 bg-black/50" />
         <motion.a
           href={`/collections/${brandName}`}
-          className="absolute inset-0 flex items-center justify-center text-white text-3xl md:text-5xl font-light tracking-wider capitalize"
+          className="absolute uppercase inset-0 flex items-center  justify-center text-white text-3xl md:text-5xl font-extralight tracking-extra "
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}

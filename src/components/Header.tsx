@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import AnnouncementBar from './AnnouncementBar';
 import { fetchCart, removeFromCart, updateQuantity } from '@/slices/cartSlice';
+import { MenuIcon } from 'lucide-react';
 import { AppDispatch, RootState } from '@/store/store';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -103,13 +104,12 @@ const Header = () => {
 
   const handleViewCart = () => {
     setIsCartOpen(false);
-    router.push('/cart');
+    router.push('/user/cart');
   };
 
   const categories = {
     'BRAND': brands,
     'COLLECTIONS': [],
-    'SOCIAL HUB': [],
     'ABOUT US': [],
     'CONTACT US': []
   };
@@ -228,14 +228,14 @@ const Header = () => {
                   isScrolled || isHovered 
                     ? 'text-black hover:text-gray-600' 
                     : 'text-white hover:text-gray-300'
-                } text-sm font-extralight tracking-extra py-2 px-1 relative block transition-colors duration-300 cursor-pointer`}
+                } text-sm hidden font-extralight tracking-extra py-2 px-4 relative sm:block transition-colors duration-300 cursor-pointer`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
               >
                 {category}
                 <motion.div
-                  className={`absolute top-full left-0 h-0.5 mt-4 z-50 ${
+                  className={`absolute top-full left-0 h-0.5 mt-3.5 z-50 ${
                     isScrolled || isHovered ? 'bg-black' : 'bg-white'
                   }`}
                   initial={{ width: 0 }}
@@ -377,7 +377,7 @@ const Header = () => {
                             <div>
                               <p className="text-sm font-medium">{item.perfume.flavor}</p>
                               <p className="text-xs text-gray-500">{item.perfume.brand?.name}</p>
-                              <p className="text-sm font-medium">DHS. {item.perfume.mrp}</p>
+                              <p className="text-sm font-medium">INR. {item.perfume.mrp}</p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -417,7 +417,7 @@ const Header = () => {
                     <div className="mt-6 pt-4 border-t">
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-sm font-medium">Subtotal</span>
-                        <span className="text-lg font-medium">DHS. {subtotal.toFixed(2)}</span>
+                        <span className="text-lg font-medium">INR. {subtotal.toFixed(2)}</span>
                       </div>
                       <div className="space-y-2">
                         <button

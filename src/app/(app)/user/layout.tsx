@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <>
       <UserNavbar />
-      <main className="min-h-screen pt-10">
+      <main className="min-h-screen max-w-6xl mx-auto pt-10">
         {children}
       </main>
     </>

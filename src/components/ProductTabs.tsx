@@ -2,13 +2,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { type Product } from "@/lib/schema";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import toast from "react-hot-toast";
 import {
   Select,
   SelectContent,
@@ -64,7 +64,6 @@ export default function ProductsTab() {
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-  const { toast } = useToast();
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -85,11 +84,7 @@ export default function ProductsTab() {
       console.log("Fetched products:", data);
       setProducts(data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load products",
-        variant: "destructive",
-      });
+      toast.error("Failed to load products");
     } finally {
       setIsLoading(false);
     }
@@ -102,11 +97,7 @@ export default function ProductsTab() {
         const data = await res.json();
         setBrands(data);
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load brands",
-          variant: "destructive",
-        });
+        toast.error("Failed to load brands");
       }
     };
     fetchBrands();
@@ -148,17 +139,10 @@ export default function ProductsTab() {
         if (!response.ok) {
           throw new Error("Failed to delete product");
         }
-        toast({
-          title: "Success",
-          description: "Product deleted successfully",
-        });
+        toast.success("Product deleted successfully");
         fetchProducts();
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to delete product",
-          variant: "destructive",
-        });
+        toast.error("Failed to delete product");
       }
     }
   };
@@ -249,7 +233,7 @@ export default function ProductsTab() {
     const response = await fetch(url, { method, body: formData });
     if (!response.ok) throw new Error("Failed to save product");
 
-    toast({ title: "Success", description: "Product saved successfully" });
+    toast.success("Product saved successfully");
 
     // reset
     setOpen(false);
@@ -272,12 +256,8 @@ export default function ProductsTab() {
 
     fetchProducts();
   } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to save product",
-      variant: "destructive",
-    });
-  }
+    toast.error("Failed to save product");
+      }
 };
 
 
