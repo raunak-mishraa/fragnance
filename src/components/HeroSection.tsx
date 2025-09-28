@@ -7,7 +7,7 @@ const HeroSection = () => {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Background Video */}
-      <div className="w-full">
+      <div className="w-full sm:block hidden">
         <video
           autoPlay
           muted

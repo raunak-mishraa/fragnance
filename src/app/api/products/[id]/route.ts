@@ -8,7 +8,6 @@ import { PerfumeType, Category } from "@prisma/client";
 const UPLOAD_DIR = path.join(process.cwd(), "public/uploads");
 
 // ✅ PUT /api/products/[id]
-// ✅ PUT /api/products/[id]
 export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }
 ) {
   try {

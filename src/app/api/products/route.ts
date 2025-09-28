@@ -55,6 +55,25 @@ export async function GET(request: NextRequest) {
   const maxPrice = parseFloat(searchParams.get("maxPrice") || "1000000");
 
   try {
+    if(brand === "new-arrivals"){
+      const newArrivals = await prisma.perfume.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // last 7 days
+          },
+        },
+        include: {
+          brand: true,
+          images: true,
+          fragrance: true,
+          variants: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json(newArrivals);
+    }
+
+
     const products = await prisma.perfume.findMany({
       where: {
         AND: [
@@ -69,15 +88,6 @@ export async function GET(request: NextRequest) {
               lte: maxPrice,
             },
           },
-          // inStock
-          //   ? {
-          //       variants: {
-          //         some: {
-          //           stock: { gt: 0 },
-          //         },
-          //       },
-          //     }
-          //   : {},
         ],
       },
       include: {

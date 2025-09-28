@@ -25,29 +25,31 @@ export default function AnnouncementBar({ className = "" }: { className?: string
   const nextMessage = () => setIndex((prev) => (prev + 1) % messages.length)
 
   return (
-    <div className={`w-full bg-[#1C1C1C] font-deem text-white font-small tracking-mid uppercase flex items-center justify-center relative h-10 ${className}`}>
-      {/* Left arrow */}
+    <div className={`w-full bg-[#1C1C1C] font-deem text-white font-small tracking-mid uppercase flex items-center justify-center relative h-13 sm:h-10 ${className}`}>
+      {/* Left arrow - positioned properly for both mobile and desktop */}
       <button
         onClick={prevMessage}
-        className="absolute left-1/2 -translate-x-100 text-white"
+        className="absolute left-4 sm:left-1/2 sm:-translate-x-100 text-white/75 hover:text-white transition-colors z-10"
+        aria-label="Previous announcement"
       >
         <ChevronLeft size={18} />
       </button>
 
-      {/* Animated message */}
-      <div className="overflow-hidden">
+      {/* Animated message - responsive width */}
+      <div className="text-center w-8/12 sm:w-10/12 mx-2">
         <p
           key={index}
-          className="animate-fadeSlide px-6 text-center whitespace-nowrap "
+          className="animate-fadeSlide px-2 sm:px-6 text-center whitespace-normal break-words"
         >
           {messages[index]}
         </p>
       </div>
 
-      {/* Right arrow */}
+      {/* Right arrow - positioned properly for both mobile and desktop */}
       <button
         onClick={nextMessage}
-        className="absolute right-1/2 translate-x-100 text-white"
+        className="absolute right-4 sm:right-1/2 sm:translate-x-100 text-white/75 hover:text-white transition-colors z-10"
+        aria-label="Next announcement"
       >
         <ChevronRight size={18} />
       </button>

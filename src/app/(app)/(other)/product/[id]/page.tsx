@@ -11,8 +11,11 @@ async function getProduct(id: string) {
   return res.json();
 }
 
-export default async function ProductDetail({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
+export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+  // ✅ Await params
+  const { id } = await params;
+
+  const product = await getProduct(id);
   if (!product) return notFound();
 
   return <ProductPage product={product} />;

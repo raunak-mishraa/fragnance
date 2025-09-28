@@ -17,7 +17,7 @@ export default function Home() {
       <NewArrivals /> 
       <Bestseller />
       {/* <DiscountPopup /> */}
-      <ShopTheLook /> 
+      {/* <ShopTheLook />  */}
       {/* <SpecialBrand /> */}
       <ProductSection />
       {/* <InfiniteScrollProducts /> */}
