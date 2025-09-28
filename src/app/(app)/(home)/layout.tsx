@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <>
       {/* Cursor Canvas goes OUTSIDE main and covers everything */}
-      {/* <CanvasCursor /> */}
+      <CanvasCursor />
 
       <Header />
       <main>{children}</main>

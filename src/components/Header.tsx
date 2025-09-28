@@ -463,7 +463,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import AnnouncementBar from './AnnouncementBar';
 import { fetchCart, removeFromCart, updateQuantity } from '@/slices/cartSlice';
-import { MenuIcon } from 'lucide-react';
+import { RxHamburgerMenu as MenuIcon} from "react-icons/rx";
 import { AppDispatch, RootState } from '@/store/store';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -595,7 +595,7 @@ const Header = () => {
           transition={{ duration: 0.6 }}
         >
             <h1 className='text-lg font-semibold sm:hidden w-1/3'>
-              <MenuIcon className={`h-6 w-6 ${isScrolled || isHovered ? 'text-black' : 'text-white'}`} />
+              <MenuIcon className={`h-6 w-6 ${isScrolled || isHovered ? 'text-black/80' : 'text-white'}`} />
             </h1>
           <motion.div 
             className='cursor-pointer ml-auto w-1/3 flex justify-center'
@@ -696,7 +696,7 @@ const Header = () => {
               >
                 {category}
                 <motion.div
-                  className={`absolute top-full left-0 h-0.5 mt-3.5 z-50 ${
+                  className={`absolute top-full left-0 h-0.5 mt-4 z-50 ${
                     isScrolled || isHovered ? 'bg-black' : 'bg-white'
                   }`}
                   initial={{ width: 0 }}
@@ -741,7 +741,7 @@ const Header = () => {
         <AnimatePresence>
           {isSearchOpen && (
             <motion.div
-              className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-40"
+              className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 z-40"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
