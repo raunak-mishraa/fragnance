@@ -32,7 +32,7 @@ const Footer = () => {
                   height={12}
                   className="object-contain w-full h-full"
                 />
-                <span className='text-xl font-bold'>SCENTSKAPE</span>
+                <span className='text-xl font-semibold'>SCENTSKAPE</span>
               </div>
               
               {/* Company Description */}

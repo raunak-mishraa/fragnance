@@ -84,7 +84,7 @@ const FollowCursor: React.FC<FollowCursorProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[999]"
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[999] hidden sm:block"
     />
   );
 };

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const messages = [
-  "FREE DELIVERY ABOVE 100 AED",
+  "FREE DELIVERY ABOVE 400 INR",
   "DELIVERY IN INDIA ONLY !!",
   "SIGN UP & GET 10% OFF YOUR FIRST PURCHASE",
 ]
